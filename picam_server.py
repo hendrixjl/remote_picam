@@ -58,24 +58,24 @@ def set_params(params, camera):
 
 def get_params(camera):
     params = {}
-    params['awb_gains'] = camera.awb_gains
-    params['brightness'] = camera.brightness
-    params['sharpness'] = camera.sharpness
-    params['contrast'] = camera.contrast
-    params['saturation'] = camera.saturation
-    params['iso'] = camera.iso
+##    params['awb_gains'] = camera.awb_gains
+##    params['brightness'] = camera.brightness
+##    params['sharpness'] = camera.sharpness
+##    params['contrast'] = camera.contrast
+##    params['saturation'] = camera.saturation
+##    params['iso'] = camera.iso
     params['exposure_compensation'] = camera.exposure_compensation
-    params['sensor_mode'] = camera.sensor_mode
-    params['rotation'] = camera.rotation
+##    params['sensor_mode'] = camera.sensor_mode
+##    params['rotation'] = camera.rotation
     params['exposure_mode'] = camera.exposure_mode
-    params['flash_mode'] = camera.flash_mode
-    params['awb_mode'] = camera.awb_mode
-    params['image_effect'] = camera.image_effect
-    params['meter_mode'] = camera.meter_mode
-    params['image_denoise'] = camera.image_denoise
-    params['resolution'] = camera.resolution
-    params['crop'] = camera.crop
-    params['zoom'] = camera.zoom
+##    params['flash_mode'] = camera.flash_mode
+##    params['awb_mode'] = camera.awb_mode
+##    params['image_effect'] = camera.image_effect
+##    params['meter_mode'] = camera.meter_mode
+##    params['image_denoise'] = camera.image_denoise
+##    params['resolution'] = camera.resolution
+##    params['crop'] = camera.crop
+##    params['zoom'] = camera.zoom
     return params
 
 def set_defaults(camera):
