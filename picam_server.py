@@ -127,6 +127,13 @@ try:
             print(params)
             connection.sendall("{}\n".format(params))
             connection.close()
+        if '!' in buff:
+            params = extract_params(buff)
+            set_params(params, camera)
+            params = get_params(camera)
+            print(params)
+            connection.sendall("{}\n".format(params))
+            connection.close()
         else:
             params = extract_params(buff)
             set_params(params, camera)
