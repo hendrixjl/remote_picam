@@ -126,12 +126,18 @@ try:
         connection = server_socket.accept()[0]
         buff = get_line(connection)
         print(buff)
-        params = extract_params(buff)
-        set_params(params, camera)
-        buffer = take_shot(camera)
-        connection.sendall(struct.pack('<L', len(buffer)))
-        connection.sendall(buffer)
-        print("sent picture")
-        connection.close()
+        if '@' in buff:
+            params = get_params(camera)
+            print(params)
+            connection.sendall(params)
+            connection.close()
+        else:
+            params = extract_params(buff)
+            set_params(params, camera)
+            buffer = take_shot(camera)
+            connection.sendall(struct.pack('<L', len(buffer)))
+            connection.sendall(buffer)
+            print("sent picture")
+            connection.close()
 finally:
     server_socket.close()
