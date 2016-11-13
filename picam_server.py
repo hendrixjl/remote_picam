@@ -125,6 +125,7 @@ try:
     while True:
         connection = server_socket.accept()[0]
         buff = get_line(connection)
+        print(buff)
         params = extract_params(buff)
         set_params(params, camera)
         buffer = take_shot(camera)
