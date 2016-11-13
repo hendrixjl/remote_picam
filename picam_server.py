@@ -129,7 +129,7 @@ try:
         if '@' in buff:
             params = get_params(camera)
             print(params)
-            connection.sendall(params)
+            connection.sendall("{}\n".format(params))
             connection.close()
         else:
             params = extract_params(buff)
