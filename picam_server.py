@@ -127,7 +127,7 @@ try:
             print(params)
             connection.sendall("{}\n".format(params))
             connection.close()
-        if '!' in buff:
+        elif '!' in buff:
             params = extract_params(buff[1:])
             set_params(params, camera)
             params = get_params(camera)
