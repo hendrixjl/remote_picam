@@ -9,10 +9,10 @@ import picam_client
 from tkinter import ttk
 
 class MyIntCntrl(ttk.Frame):
-    def __init__(self, parent, start_val, *args, **kwargs):
+    def __init__(self, parent, name, start_val, min_val, max_val, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
-        ttk.Label(big_frame, text="exp comp").pack()
+        ttk.Label(big_frame, text=name).pack()
         val_frame = ttk.Frame(big_frame)
         self.val = ttk.Label(val_frame, text="{}".format(start_val), width=3, relief=tkinter.SUNKEN, borderwidth=2)
         self.val.pack()
@@ -38,6 +38,22 @@ class MyIntCntrl(ttk.Frame):
 
     def set(self, val):
         self.val["text"] = val
+
+class MyOptionCntrl(ttk.Frame):
+    def __init__(self, parent, name, first, options, *args, **kwargs):
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
+        big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
+        ttk.Label(big_frame, text=name).pack(side='left', padx=5, pady=5)
+        self.var = tkinter.StringVar()
+        self.opts = ttk.OptionMenu(big_frame, self.var, first, *options)
+        self.opts.pack(side='left')
+        big_frame.pack()
+
+    def get_val(self):
+        return self.var.get()
+
+    def set_val(self, val):
+        self.var.set(val)
 
 class MyApp(ttk.Frame):
     """The adders gui and functions."""
@@ -66,18 +82,18 @@ class MyApp(ttk.Frame):
         addr_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         exp_frame = ttk.Frame(self)
-        ttk.Label(exp_frame, text='exposure_mode').pack(side='left', padx=5, pady=5)
         exp_mode_options = ['off', 'auto', 'night', 'nightpreview', 'backlight',
                             'spotlight', 'sports', 'snow', 'beach', 'verylong',
                             'fixedfps', 'antishake', 'fireworks' ]
-        self.exposure_mode = tkinter.StringVar()
-        self.exp_mode_opts = ttk.OptionMenu(exp_frame, self.exposure_mode, exp_mode_options[1], *exp_mode_options).pack(side='left')
-        self.exposure_compensation = MyIntCntrl(exp_frame, 0)
+        self.exposure_mode = MyOptionCntrl(exp_frame, "exposure_mode", exp_mode_options[1], exp_mode_options)
+        self.exposure_mode.pack(side=tkinter.LEFT, padx=5, pady=5)
+        self.exposure_compensation = MyIntCntrl(exp_frame, "exp comp", 0, -25, 25)
         self.exposure_compensation.pack(side=tkinter.LEFT, padx=5, pady=5)
         exp_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         bottom_frame = ttk.Frame(self)
-        ttk.Button(bottom_frame, text='Get Parameters', command=self.get_parameters).pack(pady=5)
+        ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
+        ttk.Button(bottom_frame, text='Set Parameters', command=self.send_parameters).pack(pady=5)
         bottom_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
         
         self.pack()
@@ -85,20 +101,29 @@ class MyApp(ttk.Frame):
 
     def set_parameters(self, params):
         print("params={}".format(params))
-        self.exposure_mode.set(params['exposure_mode'])
+        self.exposure_mode.set_val(params['exposure_mode'])
         self.exposure_compensation.set(params['exposure_compensation'])
 
-    def get_picture(self):
+    def get_parameters(self):
         params = {}
-        params['exposure_mode'] = self.exposure_mode.get()
+        params['exposure_mode'] = self.exposure_mode.get_val()
         params['exposure_compensation'] = self.exposure_compensation.get()
+        return params
+
+    def send_parameters(self):
+        params = self.get_parameters()
+        new_params = picam_client.set_parameters(params, self.host.get(), int(self.port.get()))
+        print("{}".format(new_params))
+
+    def get_picture(self):
+        params = self.get_parameters()
         image_stream = picam_client.request_picture(params, self.host.get(), int(self.port.get()))
         image = Image.open(image_stream)
         print('Image is %dx%d' % image.size)
         image.verify()
         print('Image is verified')
 
-    def get_parameters(self):
+    def fetch_parameters(self):
         params = picam_client.get_parameters(self.host.get(), int(self.port.get()))
         self.set_parameters(params)
         
