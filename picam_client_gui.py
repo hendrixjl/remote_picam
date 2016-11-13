@@ -45,7 +45,13 @@ class MyOptionCntrl(ttk.Frame):
         big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
         ttk.Label(big_frame, text=name).pack(side='left', padx=5, pady=5)
         self.var = tkinter.StringVar()
+        max_chars = 0
+        for o in options:
+            if len(o) > max_chars:
+                max_chars = len(o)
+        
         self.opts = ttk.OptionMenu(big_frame, self.var, first, *options)
+        self.opts.config(width=max_chars)
         self.opts.pack(side='left')
         big_frame.pack()
 
