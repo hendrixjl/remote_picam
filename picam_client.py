@@ -38,6 +38,34 @@ def get_picture(socket):
     image_stream.seek(0)
     return image_stream.read()
 
+class MyIntCntrl(ttk.Frame):
+    def __init__(self, parent, start_val, *args, **kwargs):
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
+        big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
+        ttk.Label(big_frame, text="exp comp").pack()
+        val_frame = ttk.Frame(big_frame)
+        self.val = ttk.Label(val_frame, text="{}".format(start_val), width=3, relief=tkinter.SUNKEN, borderwidth=2)
+        self.val.pack()
+        val_frame.pack(side=tkinter.LEFT)
+        cntrl_frame = ttk.Frame(big_frame)
+        ttk.Button(cntrl_frame, text='+', width=3, command=self.increment).pack()
+        ttk.Button(cntrl_frame, text='-', width=3, command=self.decrement).pack()
+        cntrl_frame.pack()
+        big_frame.pack()
+        
+    def increment(self):
+        val = int(self.val["text"])
+        val += 1
+        self.val["text"] = "{}".format(val)
+        
+    def decrement(self):
+        val = int(self.val["text"])
+        val -= 1
+        self.val["text"] = "{}".format(val)
+
+    def get(self):
+        return int(self.val["text"])
+
 class MyApp(ttk.Frame):
     """The adders gui and functions."""
     def __init__(self, parent, host, port, *args, **kwargs):
@@ -48,12 +76,12 @@ class MyApp(ttk.Frame):
     def init_gui(self, host, port):
         """Builds GUI."""
         self.root.title('remote_picam')
-        self.pack()
 
-        top_frame = ttk.Frame(self).pack(side=tkinter.TOP, fill=tkinter.BOTH)
+        top_frame = ttk.Frame(self)
         ttk.Button(top_frame, text='Get Picture', command=self.get_picture).pack(pady=5)
+        top_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
         
-        addr_frame = ttk.Frame(self).pack(side=tkinter.TOP, fill=tkinter.BOTH)
+        addr_frame = ttk.Frame(self)
         ttk.Label(addr_frame, text='host:').pack(side=tkinter.LEFT, padx=5, pady=5)
         self.host = ttk.Entry(addr_frame, width=12)
         self.host.insert(0, host)
@@ -62,24 +90,34 @@ class MyApp(ttk.Frame):
         self.port = ttk.Entry(addr_frame, width=5)
         self.port.insert(0, port)
         self.port.pack(side=tkinter.LEFT, padx=5, pady=5)
+        addr_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
-        exp_frame = ttk.Frame(self).pack(side=tkinter.TOP, fill=tkinter.BOTH)
-        ttk.Label(exp_frame, text='exposure_mode').pack()
+        exp_frame = ttk.Frame(self)
+        ttk.Label(exp_frame, text='exposure_mode').pack(side='left', padx=5, pady=5)
         exp_mode_options = ['off', 'auto', 'night', 'nightpreview', 'backlight',
                             'spotlight', 'sports', 'snow', 'beach', 'verylong',
                             'fixedfps', 'antishake', 'fireworks' ]
         self.exposure_mode = tkinter.StringVar()
-        ttk.OptionMenu(exp_frame, self.exposure_mode, exp_mode_options[1], *exp_mode_options).pack(side='left', padx=5, pady=5)
+        ttk.OptionMenu(exp_frame, self.exposure_mode, exp_mode_options[1], *exp_mode_options).pack(side='left')
+        self.exposure_compensation = MyIntCntrl(exp_frame, 0)
+        self.exposure_compensation.pack(side=tkinter.LEFT, padx=5, pady=5)
+        exp_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
-        bottom_frame = ttk.Frame(self).pack(side=tkinter.TOP, fill=tkinter.BOTH)
-        ttk.Button(top_frame, text='Get Parameters', command=self.get_parameters).pack(pady=5)
+        bottom_frame = ttk.Frame(self)
+        ttk.Button(bottom_frame, text='Get Parameters', command=self.get_parameters).pack(pady=5)
+        bottom_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
+        
+        self.pack()
         
 
     def get_picture(self):
-        message = "exposure_mode='{}'\n".format(self.exposure_mode.get())
+        params = {}
+        params['exposure_mode'] = self.exposure_mode.get()
+        params['exposure_compensation'] = self.exposure_compensation.get()
+        print("params={}".format(params))
         mysocket = socket.socket()
         mysocket.connect((self.host.get(), int(self.port.get())))
-        mysocket.send(message.encode())
+        mysocket.send("{}\n".format(params).encode())
         pic = get_picture(mysocket)
         t = datetime.datetime.now()
         fname = "pi-{}-{}-{}-{}-{}-{}.jpg".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
@@ -93,8 +131,14 @@ class MyApp(ttk.Frame):
         mysocket = socket.socket()
         mysocket.connect((self.host.get(), int(self.port.get())))
         mysocket.send(message.encode())
-        print(get_line(mysocket))
+        params = ast.literal_eval(get_line(mysocket))
         mysocket.close()
+        set_parameters(data)
+
+    def set_parameters(self, params):
+        print("params={}".format(params))
+        
+        
 
 root = tkinter.Tk()
 MyApp(root, sys.argv[1], sys.argv[2])

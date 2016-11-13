@@ -3,6 +3,7 @@ import datetime
 import socket
 import io
 import struct
+import ast
 
 def make_int_tuple(data):
     fields = data.strip('(').rstrip(')').split(',')
@@ -98,12 +99,7 @@ def get_key_value(text):
     return k,v
 
 def extract_params(line):
-    fields = line.split()
-    values = {}
-    for f in fields:
-        k,v = get_key_value(f)
-        values[k] = v
-    return values
+    return ast.literal_eval(line)
 
 def take_shot(camera):
     stream = io.BytesIO()
