@@ -11,6 +11,8 @@ from tkinter import ttk
 class MyIntCntrl(ttk.Frame):
     def __init__(self, parent, name, start_val, min_val, max_val, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
+        self.min_val = min_val
+        self.max_val = max_val
         big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
         ttk.Label(big_frame, text=name).pack()
         val_frame = ttk.Frame(big_frame)
@@ -23,15 +25,26 @@ class MyIntCntrl(ttk.Frame):
         cntrl_frame.pack()
         big_frame.pack()
         
+    dev validate(self, P):
+        if not P:
+            return False
+        try:
+            f = int(P)
+            return (f >= self.min_val) && (f <= self.max_val)
+        except ValueError:
+            return False
+        
     def increment(self):
-        val = int(self.val["text"])
-        val += 1
-        self.val["text"] = "{}".format(val)
+        if (f < self.max_val):
+            val = int(self.val["text"])
+            val += 1
+            self.val["text"] = "{}".format(val)
         
     def decrement(self):
-        val = int(self.val["text"])
-        val -= 1
-        self.val["text"] = "{}".format(val)
+        if (f > self.min_val):
+            val = int(self.val["text"])
+            val -= 1
+            self.val["text"] = "{}".format(val)
 
     def get(self):
         return int(self.val["text"])
