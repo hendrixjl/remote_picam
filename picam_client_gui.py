@@ -25,15 +25,6 @@ class MyIntCntrl(ttk.Frame):
         cntrl_frame.pack()
         big_frame.pack()
         
-    dev validate(self, P):
-        if not P:
-            return False
-        try:
-            f = int(P)
-            return (f >= self.min_val) && (f <= self.max_val)
-        except ValueError:
-            return False
-        
     def increment(self):
         if (f < self.max_val):
             val = int(self.val["text"])
@@ -80,7 +71,17 @@ class MyApp(ttk.Frame):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         self.root = parent
         self.init_gui(host, port)
- 
+        
+    def validate_port(self, P):
+        if not P:
+            return False
+        try:
+            f = int(P)
+            return (f > 0) && (f <= 65535)
+        except ValueError:
+            return False
+        
+
     def init_gui(self, host, port):
         """Builds GUI."""
         self.root.title('remote_picam')
@@ -95,7 +96,7 @@ class MyApp(ttk.Frame):
         self.host.insert(0, host)
         self.host.pack(side=tkinter.LEFT, padx=5, pady=5)
         ttk.Label(addr_frame, text='port:').pack(side=tkinter.LEFT, padx=5, pady=5)
-        self.port = ttk.Entry(addr_frame, width=5)
+        self.port = ttk.Entry(addr_frame, width=5, validatecommand=(self.register(self.validate_port), '%P'))
         self.port.insert(0, port)
         self.port.pack(side=tkinter.LEFT, padx=5, pady=5)
         addr_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
