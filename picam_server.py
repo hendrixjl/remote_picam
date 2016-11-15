@@ -72,8 +72,9 @@ def get_params(camera):
     params['zoom'] = camera.zoom
     return params
 
-def set_defaults(camera):
-    camera.resolution = (1600, 1200)
+def get_defaults():
+    params['image_denoise'] = (1600, 1200)
+    return params
 
 def get_line(connection):
     buff = ''
@@ -101,8 +102,19 @@ def take_shot(camera):
     stream.seek(0)
     return stream.read()
 
+def save_settings(params):
+    with open("settings.txt", 'w', encoding='utf-8') as outfile:
+        outfile.write("{}".format(params))
+
+try:
+    with open("settings.txt", 'r', encoding='utf-8') as infile:
+        line = infile.read()
+        params = extract_params(line)
+except FileNotFoundError:
+    params = get_defaults()
+    
 camera = picamera.PiCamera()
-set_defaults(camera)
+set_params(params, camera)
 
 # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
 # all interfaces)
@@ -128,6 +140,7 @@ try:
             print(params)
             connection.sendall("{}\n".format(params))
             connection.close()
+            save_settings(params)
         else:
             params = extract_params(buff)
             set_params(params, camera)
