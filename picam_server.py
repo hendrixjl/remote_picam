@@ -49,8 +49,7 @@ def set_params(params, camera):
     if 'image_denoise' in params:
         camera.image_denoise = 'True' in params['image_denoise']
     if 'resolution' in params:
-        print('resolution param = {}'.format(params['resolution']))
-        camera.resolution = make_int_tuple(params['resolution'])
+        camera.resolution = params['resolution']
     if 'crop' in params:
         camera.crop = make_float_tuple(params['crop'])
     if 'zoom' in params:
@@ -73,7 +72,10 @@ def get_params(camera):
 ##    params['image_effect'] = camera.image_effect
 ##    params['meter_mode'] = camera.meter_mode
 ##    params['image_denoise'] = camera.image_denoise
-##    params['resolution'] = camera.resolution
+    res = str(camera.resolution).split('x')
+    x = int(res[0])
+    y = int(res[1])
+    params['resolution'] = (x, y)
 ##    params['crop'] = camera.crop
 ##    params['zoom'] = camera.zoom
     return params

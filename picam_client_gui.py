@@ -43,6 +43,30 @@ class MyIntCntrl(ttk.Frame):
     def set(self, val):
         self.val["text"] = val
 
+
+class MyResCntrl(ttk.Frame):
+    def __init__(self, parent, x, y, *args, **kwargs):
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
+        big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
+        ttk.Label(big_frame, text="resolution x:").pack(side=tkinter.LEFT)
+        self.x = ttk.Entry(big_frame, width=4)
+        self.x.insert(0, str(x))
+        self.x.pack(side=tkinter.LEFT, padx=5, pady=5)
+        ttk.Label(big_frame, text="y:").pack(side=tkinter.LEFT)
+        self.y = ttk.Entry(big_frame, width=4)
+        self.y.insert(0, str(y))
+        self.y.pack(side=tkinter.LEFT, padx=5, pady=5)
+        big_frame.pack()
+        
+    def get_val(self):
+        return int(self.x.get()), int(self.y.get())
+
+    def set_val(self, res):
+        self.x.delete(0, tkinter.END)
+        self.x.insert(0, str(res[0]))
+        self.y.delete(0, tkinter.END)
+        self.y.insert(0, str(res[1]))
+
 class MyOptionCntrl(ttk.Frame):
     def __init__(self, parent, name, first, options, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
@@ -77,7 +101,7 @@ class MyApp(ttk.Frame):
             return False
         try:
             f = int(P)
-            return (f > 0) && (f <= 65535)
+            return (f > 0) and (f <= 65535)
         except ValueError:
             return False
         
@@ -111,6 +135,9 @@ class MyApp(ttk.Frame):
         self.exposure_compensation.pack(side=tkinter.LEFT, padx=5, pady=5)
         exp_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
+        self.res_cntrl = MyResCntrl(self, 1600, 1200)
+        self.res_cntrl.pack(side=tkinter.TOP)
+
         bottom_frame = ttk.Frame(self)
         ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
         ttk.Button(bottom_frame, text='Set Parameters', command=self.send_parameters).pack(pady=5)
@@ -123,11 +150,13 @@ class MyApp(ttk.Frame):
         print("params={}".format(params))
         self.exposure_mode.set_val(params['exposure_mode'])
         self.exposure_compensation.set(params['exposure_compensation'])
+        self.res_cntrl.set_val(params['resolution'])
 
     def get_parameters(self):
         params = {}
         params['exposure_mode'] = self.exposure_mode.get_val()
         params['exposure_compensation'] = self.exposure_compensation.get()
+        params['resolution'] = self.res_cntrl.get_val()
         return params
 
     def send_parameters(self):
