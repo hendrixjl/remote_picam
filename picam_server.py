@@ -5,14 +5,6 @@ import io
 import struct
 import ast
 
-def make_int_tuple(data):
-    fields = data.strip('(').rstrip(')').split(',')
-    return int(fields[0]), int(fields[1])
-
-def make_float_tuple(data):
-    fields = data.strip('(').rstrip(')').split(',')
-    floats = [float(i) for i in fields]
-    return tuple(floats)
     
 def set_params(params, camera):
     if 'awb_gains' in params:
@@ -21,21 +13,21 @@ def set_params(params, camera):
         blue = make_int_tuple(fields[1])
         camera.awb_gains = ( red, blue )
     if 'brightness' in params:
-        camera.brightness = int(params['brightness'])
+        camera.brightness = params['brightness']
     if 'sharpness' in params:
-        camera.sharpness = int(params['sharpness'])
+        camera.sharpness = params['sharpness']
     if 'contrast' in params:
-        camera.contrast = int(params['contrast'])
+        camera.contrast = params['contrast']
     if 'saturation' in params:
-        camera.saturation = int(params['saturation'])
+        camera.saturation = params['saturation']
     if 'iso' in params:
-        camera.iso = int(params['iso'])
+        camera.iso = params['iso']
     if 'exposure_compensation' in params:
-        camera.exposure_compensation = int(params['exposure_compensation'])
+        camera.exposure_compensation = params['exposure_compensation']
     if 'sensor_mode' in params:
-        camera.sensor_mode = int(params['sensor_mode'])
+        camera.sensor_mode = params['sensor_mode']
     if 'rotation' in params:
-        camera.rotation = int(params['rotation'])
+        camera.rotation = params['rotation']
     if 'exposure_mode' in params:
         camera.exposure_mode = params['exposure_mode']
     if 'flash_mode' in params:
@@ -47,37 +39,37 @@ def set_params(params, camera):
     if 'meter_mode' in params:
         camera.meter_mode = params['meter_mode']
     if 'image_denoise' in params:
-        camera.image_denoise = 'True' in params['image_denoise']
+        camera.image_denoise = params['image_denoise']
     if 'resolution' in params:
         camera.resolution = params['resolution']
     if 'crop' in params:
-        camera.crop = make_float_tuple(params['crop'])
+        camera.crop = params['crop']
     if 'zoom' in params:
-        camera.zoom = make_float_tuple(params['zoom'])
+        camera.zoom = params['zoom']
 
 def get_params(camera):
     params = {}
-##    params['awb_gains'] = camera.awb_gains
-##    params['brightness'] = camera.brightness
-##    params['sharpness'] = camera.sharpness
-##    params['contrast'] = camera.contrast
-##    params['saturation'] = camera.saturation
-##    params['iso'] = camera.iso
+    params['awb_gains'] = camera.awb_gains
+    params['brightness'] = camera.brightness
+    params['sharpness'] = camera.sharpness
+    params['contrast'] = camera.contrast
+    params['saturation'] = camera.saturation
+    params['iso'] = camera.iso
     params['exposure_compensation'] = camera.exposure_compensation
-##    params['sensor_mode'] = camera.sensor_mode
-##    params['rotation'] = camera.rotation
+    params['sensor_mode'] = camera.sensor_mode
+    params['rotation'] = camera.rotation
     params['exposure_mode'] = camera.exposure_mode
-##    params['flash_mode'] = camera.flash_mode
-##    params['awb_mode'] = camera.awb_mode
-##    params['image_effect'] = camera.image_effect
-##    params['meter_mode'] = camera.meter_mode
-##    params['image_denoise'] = camera.image_denoise
+    params['flash_mode'] = camera.flash_mode
+    params['awb_mode'] = camera.awb_mode
+    params['image_effect'] = camera.image_effect
+    params['meter_mode'] = camera.meter_mode
+    params['image_denoise'] = camera.image_denoise
     res = str(camera.resolution).split('x')
     x = int(res[0])
     y = int(res[1])
     params['resolution'] = (x, y)
-##    params['crop'] = camera.crop
-##    params['zoom'] = camera.zoom
+    params['crop'] = camera.crop
+    params['zoom'] = camera.zoom
     return params
 
 def set_defaults(camera):
