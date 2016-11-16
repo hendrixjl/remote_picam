@@ -54,9 +54,9 @@ def get_params(camera):
     params['sharpness'] = camera.sharpness
     params['contrast'] = camera.contrast
     params['saturation'] = camera.saturation
-    params['iso'] = camera.iso
+    params['iso'] = camera.iso.rstrip('L')
     params['exposure_compensation'] = camera.exposure_compensation
-    params['sensor_mode'] = camera.sensor_mode
+    params['sensor_mode'] = camera.sensor_mode.rstrip('L')
     params['rotation'] = camera.rotation
     params['exposure_mode'] = camera.exposure_mode
     params['flash_mode'] = camera.flash_mode
