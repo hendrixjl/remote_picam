@@ -7,11 +7,11 @@ import ast
 
     
 def set_params(params, camera):
-    if 'awb_gains' in params:
-        fields = params['awb_gains'].split(',')
-        red = make_int_tuple(fields[0])
-        blue = make_int_tuple(fields[1])
-        camera.awb_gains = ( red, blue )
+##    if 'awb_gains' in params:
+##        fields = params['awb_gains'].split(',')
+##        red = make_int_tuple(fields[0])
+##        blue = make_int_tuple(fields[1])
+##        camera.awb_gains = ( red, blue )
     if 'brightness' in params:
         camera.brightness = params['brightness']
     if 'sharpness' in params:
@@ -49,7 +49,7 @@ def set_params(params, camera):
 
 def get_params(camera):
     params = {}
-    params['awb_gains'] = camera.awb_gains
+#    params['awb_gains'] = camera.awb_gains
     params['brightness'] = camera.brightness
     params['sharpness'] = camera.sharpness
     params['contrast'] = camera.contrast
