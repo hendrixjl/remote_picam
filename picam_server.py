@@ -104,12 +104,12 @@ def take_shot(camera):
     return stream.read()
 
 def save_settings(params):
-    with open("settings.txt", 'w', encoding='utf-8') as outfile:
+    with open("settings.txt", 'w') as outfile:
         outfile.write("{}".format(params))
 
 def load_settings():
     try:
-        with open("settings.txt", 'r', encoding='utf-8') as infile:
+        with open("settings.txt", 'r') as infile:
             line = infile.read()
             params = extract_params(line)
     except IOError:
