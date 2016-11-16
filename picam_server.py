@@ -73,6 +73,7 @@ def get_params(camera):
     return params
 
 def get_defaults():
+    params = {}
     params['image_denoise'] = (1600, 1200)
     return params
 
@@ -106,48 +107,56 @@ def save_settings(params):
     with open("settings.txt", 'w', encoding='utf-8') as outfile:
         outfile.write("{}".format(params))
 
-try:
-    with open("settings.txt", 'r', encoding='utf-8') as infile:
-        line = infile.read()
-        params = extract_params(line)
-except FileNotFoundError:
-    params = get_defaults()
-    
-camera = picamera.PiCamera()
-set_params(params, camera)
+def load_settings():
+    try:
+        with open("settings.txt", 'r', encoding='utf-8') as infile:
+            line = infile.read()
+            params = extract_params(line)
+    except IOError:
+        params = get_defaults()
+    return params
 
-# Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
-# all interfaces)
-server_socket = socket.socket()
-server_socket.bind(('0.0.0.0', 8000))
-server_socket.listen(0)
-index = 0
-print("Running")
-try:
-    while True:
-        connection = server_socket.accept()[0]
-        buff = get_line(connection)
-        print(buff)
-        if '@' in buff:
-            params = get_params(camera)
-            print(params)
-            connection.sendall("{}\n".format(params))
-            connection.close()
-        elif '!' in buff:
-            params = extract_params(buff[1:])
-            set_params(params, camera)
-            params = get_params(camera)
-            print(params)
-            connection.sendall("{}\n".format(params))
-            connection.close()
-            save_settings(params)
-        else:
-            params = extract_params(buff)
-            set_params(params, camera)
-            buffer = take_shot(camera)
-            connection.sendall(struct.pack('<L', len(buffer)))
-            connection.sendall(buffer)
-            print("sent picture")
-            connection.close()
-finally:
-    server_socket.close()
+def main():
+    params = load_settings()
+    camera = picamera.PiCamera()
+    set_params(params, camera)
+
+    # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
+    # all interfaces)
+    server_socket = socket.socket()
+    server_socket.bind(('0.0.0.0', 8000))
+    server_socket.listen(0)
+    index = 0
+    print("Running")
+    try:
+        while True:
+            connection = server_socket.accept()[0]
+            buff = get_line(connection)
+            print(buff)
+            if '@' in buff:
+                params = get_params(camera)
+                print(params)
+                connection.sendall("{}\n".format(params))
+                connection.close()
+            elif '!' in buff:
+                params = extract_params(buff[1:])
+                set_params(params, camera)
+                params = get_params(camera)
+                print(params)
+                connection.sendall("{}\n".format(params))
+                connection.close()
+                save_settings(params)
+            else:
+                params = extract_params(buff)
+                set_params(params, camera)
+                buffer = take_shot(camera)
+                connection.sendall(struct.pack('<L', len(buffer)))
+                connection.sendall(buffer)
+                print("sent picture")
+                connection.close()
+    finally:
+        server_socket.close()
+
+if __name__ == "__main__":
+    main()
+    
