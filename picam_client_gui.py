@@ -1,6 +1,6 @@
 import sys
 import io
-from PIL import Image
+from PIL import Image, ImageTk
 import datetime
 import tkinter
 import ast
@@ -142,6 +142,9 @@ class MyApp(ttk.Frame):
         ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
         ttk.Button(bottom_frame, text='Set Parameters', command=self.send_parameters).pack(pady=5)
         bottom_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
+
+        #self.photolabel = tkinter.Label(self)
+        #self.photolabel.pack(side=tkinter.TOP)
         
         self.pack()
         
@@ -171,6 +174,10 @@ class MyApp(ttk.Frame):
         print('Image is %dx%d' % image.size)
         image.verify()
         print('Image is verified')
+        #self.photo = ImageTk.PhotoImage(image)
+        #self.photolabel = tkinter.Label(self, image=photo)
+        #self.photolabel.pack(side=tkinter.TOP)
+ 
 
     def fetch_parameters(self):
         params = picam_client.get_parameters(self.host.get(), int(self.port.get()))
