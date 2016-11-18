@@ -119,7 +119,7 @@ def load_settings():
 def identify_camera(camera):
     try:
         camera.resolution = (3280, 2464)
-    except IOError:
+    except picamera.exc.PiCameraValueError:
         camera.resolution = (2592, 1944)
         return 1
     return 2
