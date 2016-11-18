@@ -125,8 +125,9 @@ def identify_camera(camera):
     return 2
 
 def main():
-    params = load_settings()
     camera = picamera.PiCamera()
+    version = identify_camera(camera)
+    params = load_settings()
     set_params(params, camera)
 
     # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
