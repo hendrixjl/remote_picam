@@ -116,6 +116,14 @@ def load_settings():
         params = get_defaults()
     return params
 
+def identify_camera(camera):
+    try:
+        camera.width = (3280, 2464)
+    except IOError:
+        camera.width = (2592, 1944)
+        return 1
+    return 2
+
 def main():
     params = load_settings()
     camera = picamera.PiCamera()
