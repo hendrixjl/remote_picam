@@ -6,87 +6,82 @@ import struct
 import ast
 
     
-def set_params(params, camera):
-##    if 'awb_gains' in params:
-##        fields = params['awb_gains'].split(',')
+def set_params(aparams, acamera):
+##    if 'awb_gains' in aparams:
+##        fields = aparams['awb_gains'].split(',')
 ##        red = make_int_tuple(fields[0])
 ##        blue = make_int_tuple(fields[1])
-##        camera.awb_gains = ( red, blue )
-    if 'brightness' in params:
-        camera.brightness = params['brightness']
+##        acamera.awb_gains = ( red, blue )
+    if 'brightness' in aparams:
+        acamera.brightness = aparams['brightness']
     if 'sharpness' in params:
-        camera.sharpness = params['sharpness']
-    if 'contrast' in params:
-        camera.contrast = params['contrast']
-    if 'saturation' in params:
-        camera.saturation = params['saturation']
-    if 'iso' in params:
-        camera.iso = params['iso']
-    if 'exposure_compensation' in params:
-        camera.exposure_compensation = params['exposure_compensation']
-    if 'sensor_mode' in params:
-        camera.sensor_mode = params['sensor_mode']
-    if 'rotation' in params:
-        camera.rotation = params['rotation']
-    if 'exposure_mode' in params:
-        camera.exposure_mode = params['exposure_mode']
-    if 'flash_mode' in params:
-        camera.flash_mode = params['flash_mode']
-    if 'awb_mode' in params:
-        camera.awb_mode = params['awb_mode']
-    if 'image_effect' in params:
-        camera.image_effect = params['image_effect']
-    if 'meter_mode' in params:
-        camera.meter_mode = params['meter_mode']
-    if 'image_denoise' in params:
-        camera.image_denoise = params['image_denoise']
-    if 'resolution' in params:
-        camera.resolution = params['resolution']
-    if 'crop' in params:
-        camera.crop = params['crop']
-    if 'zoom' in params:
-        camera.zoom = params['zoom']
+        acamera.sharpness = aparams['sharpness']
+    if 'contrast' in aparams:
+        acamera.contrast = aparams['contrast']
+    if 'saturation' in aparams:
+        acamera.saturation = aparams['saturation']
+    if 'iso' in aparams:
+        acamera.iso = aparams['iso']
+    if 'exposure_compensation' in aparams:
+        acamera.exposure_compensation = aparams['exposure_compensation']
+    if 'sensor_mode' in aparams:
+        acamera.sensor_mode = aparams['sensor_mode']
+    if 'rotation' in aparams:
+        acamera.rotation = aparams['rotation']
+    if 'exposure_mode' in aparams:
+        acamera.exposure_mode = aparams['exposure_mode']
+    if 'flash_mode' in aparams:
+        acamera.flash_mode = aparams['flash_mode']
+    if 'awb_mode' in aparams:
+        acamera.awb_mode = aparams['awb_mode']
+    if 'image_effect' in aparams:
+        acamera.image_effect = aparams['image_effect']
+    if 'meter_mode' in aparams:
+        acamera.meter_mode = aparams['meter_mode']
+    if 'image_denoise' in aparams:
+        acamera.image_denoise = aparams['image_denoise']
+    if 'resolution' in aparams:
+        acamera.resolution = aparams['resolution']
+    if 'crop' in aparams:
+        acamera.crop = aparams['crop']
+    if 'zoom' in aparams:
+        acamera.zoom = aparams['zoom']
 
-def get_params(camera):
-    params = {}
-#    params['awb_gains'] = camera.awb_gains
-    params['brightness'] = camera.brightness
-    params['sharpness'] = camera.sharpness
-    params['contrast'] = camera.contrast
-    params['saturation'] = camera.saturation
-    params['iso'] = int(camera.iso)
-    params['exposure_compensation'] = camera.exposure_compensation
-    params['sensor_mode'] = int(camera.sensor_mode)
-    params['rotation'] = camera.rotation
-    params['exposure_mode'] = camera.exposure_mode
-    params['flash_mode'] = camera.flash_mode
-    params['awb_mode'] = camera.awb_mode
-    params['image_effect'] = camera.image_effect
-    params['meter_mode'] = camera.meter_mode
-    params['image_denoise'] = camera.image_denoise
-    res = str(camera.resolution).split('x')
+def get_params(acamera):
+    p = {}
+#    p['awb_gains'] = acamera.awb_gains
+    p['brightness'] = acamera.brightness
+    p['sharpness'] = acamera.sharpness
+    p['contrast'] = acamera.contrast
+    p['saturation'] = acamera.saturation
+    p['iso'] = int(acamera.iso)
+    p['exposure_compensation'] = acamera.exposure_compensation
+    p['sensor_mode'] = int(acamera.sensor_mode)
+    p['rotation'] = acamera.rotation
+    p['exposure_mode'] = acamera.exposure_mode
+    p['flash_mode'] = acamera.flash_mode
+    p['awb_mode'] = acamera.awb_mode
+    p['image_effect'] = acamera.image_effect
+    p['meter_mode'] = acamera.meter_mode
+    p['image_denoise'] = acamera.image_denoise
+    res = str(acamera.resolution).split('x')
     x = int(res[0])
     y = int(res[1])
-    params['resolution'] = (x, y)
-    params['crop'] = camera.crop
-    params['zoom'] = camera.zoom
-    return params
+    p['resolution'] = (x, y)
+    p['crop'] = acamera.crop
+    p['zoom'] = acamera.zoom
+    return p
 
-def get_defaults():
-    params = {}
-    params['image_denoise'] = (1600, 1200)
-    return params
-
-def get_line(connection):
+def get_line(conn):
     buff = ''
     while True:
-        tbuff = connection.recv(1024).decode()
+        tbuff = conn.recv(1024).decode()
         buff += tbuff
         if '\n' in tbuff:
             return buff
 
-def get_key_value(text):
-    fields = text.split('=')
+def get_key_value(t):
+    fields = t.split('=')
     k = fields[0]
     if len(fields) > 1:
         v = fields[1].strip("'").rstrip("'")
@@ -94,39 +89,39 @@ def get_key_value(text):
         v = None
     return k,v
 
-def extract_params(line):
-    return ast.literal_eval(line)
+def extract_params(l):
+    return ast.literal_eval(l)
 
-def take_shot(camera):
+def take_shot(acamera):
     stream = io.BytesIO()
-    camera.capture(stream, 'jpeg')
+    acamera.capture(stream, 'jpeg')
     stream.seek(0)
     return stream.read()
 
-def save_settings(params):
+def save_settings(p):
     with open("settings.txt", 'w') as outfile:
-        outfile.write("{}".format(params))
+        outfile.write("{}".format(p))
 
-def load_settings():
+def load_settings(acamera):
+    identify_camera(acamera)
     try:
         with open("settings.txt", 'r') as infile:
             line = infile.read()
-            params = extract_params(line)
+            p = extract_params(line)
     except IOError:
-        params = get_defaults()
-    return params
+        p = get_params()
+    return p
 
-def identify_camera(camera):
+def identify_camera(acamera):
     try:
-        camera.resolution = (3280, 2464)
+        acamera.resolution = (3280, 2464)
     except picamera.exc.PiCameraValueError:
-        camera.resolution = (2592, 1944)
+        acamera.resolution = (2592, 1944)
         return 1
     return 2
 
 def main():
     camera = picamera.PiCamera()
-    version = identify_camera(camera)
     params = load_settings()
     set_params(params, camera)
 
