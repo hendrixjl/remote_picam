@@ -14,7 +14,7 @@ def set_params(aparams, acamera):
 ##        acamera.awb_gains = ( red, blue )
     if 'brightness' in aparams:
         acamera.brightness = aparams['brightness']
-    if 'sharpness' in params:
+    if 'sharpness' in aparams:
         acamera.sharpness = aparams['sharpness']
     if 'contrast' in aparams:
         acamera.contrast = aparams['contrast']
