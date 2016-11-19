@@ -44,8 +44,6 @@ def set_params(aparams, acamera):
         acamera.resolution = aparams['resolution']
     if 'crop' in aparams:
         acamera.crop = aparams['crop']
-    if 'zoom' in aparams:
-        acamera.zoom = aparams['zoom']
 
 def get_params(acamera):
     p = {}
@@ -69,7 +67,6 @@ def get_params(acamera):
     y = int(res[1])
     p['resolution'] = (x, y)
     p['crop'] = acamera.crop
-    p['zoom'] = acamera.zoom
     return p
 
 def get_line(conn):
