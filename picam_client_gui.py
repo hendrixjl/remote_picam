@@ -26,14 +26,14 @@ class MyIntCntrl(ttk.Frame):
         big_frame.pack()
         
     def increment(self):
-        if (f < self.max_val):
-            val = int(self.val["text"])
+        val = int(self.val["text"])
+        if (val < self.max_val):
             val += 1
             self.val["text"] = "{}".format(val)
         
     def decrement(self):
-        if (f > self.min_val):
-            val = int(self.val["text"])
+        val = int(self.val["text"])
+        if (val > self.min_val):
             val -= 1
             self.val["text"] = "{}".format(val)
 
@@ -66,6 +66,42 @@ class MyResCntrl(ttk.Frame):
         self.x.insert(0, str(res[0]))
         self.y.delete(0, tkinter.END)
         self.y.insert(0, str(res[1]))
+
+class My4TupleCntrl(ttk.Frame):
+    def __init__(self, parent, name, x1, y1, x2, y2, *args, **kwargs):
+        ttk.Frame.__init__(self, parent, *args, **kwargs)
+        big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
+        ttk.Label(big_frame, text="{}:x1".format(name)).pack(side=tkinter.LEFT)
+        self.x1 = ttk.Entry(big_frame, width=5)
+        self.x1.insert(0, str(x1))
+        self.x1.pack(side=tkinter.LEFT, padx=5, pady=5)
+        ttk.Label(big_frame, text="y1:").pack(side=tkinter.LEFT)
+        self.y1 = ttk.Entry(big_frame, width=5)
+        self.y1.insert(0, str(y1))
+        self.y1.pack(side=tkinter.LEFT, padx=5, pady=5)
+        ttk.Label(big_frame, text="x2".format(name)).pack(side=tkinter.LEFT)
+        self.x2 = ttk.Entry(big_frame, width=5)
+        self.x2.insert(0, str(x2))
+        self.x2.pack(side=tkinter.LEFT, padx=5, pady=5)
+        ttk.Label(big_frame, text="y2:").pack(side=tkinter.LEFT)
+        self.y2 = ttk.Entry(big_frame, width=5)
+        self.y2.insert(0, str(y2))
+        self.y2.pack(side=tkinter.LEFT, padx=5, pady=5)
+        big_frame.pack()
+        
+    def get_val(self):
+        return float(self.x1.get()), float(self.y1.get()), float(self.x2.get()), float(self.y2.get())
+
+    def set_val(self, res):
+        fmt = "{:5.3f}"
+        self.x1.delete(0, tkinter.END)
+        self.x1.insert(0, fmt.format(res[0]))
+        self.y1.delete(0, tkinter.END)
+        self.y1.insert(0, fmt.format(res[1]))
+        self.x2.delete(0, tkinter.END)
+        self.x2.insert(0, fmt.format(res[2]))
+        self.y2.delete(0, tkinter.END)
+        self.y2.insert(0, fmt.format(res[3]))
 
 class MyOptionCntrl(ttk.Frame):
     def __init__(self, parent, name, first, options, *args, **kwargs):
@@ -137,6 +173,8 @@ class MyApp(ttk.Frame):
 
         self.res_cntrl = MyResCntrl(self, 1600, 1200)
         self.res_cntrl.pack(side=tkinter.TOP)
+        self.crop_cntrl = My4TupleCntrl(self, "crop", 0.0, 0.0, 1.0, 1.0)
+        self.crop_cntrl.pack(side=tkinter.TOP)
 
         bottom_frame = ttk.Frame(self)
         ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
@@ -147,6 +185,7 @@ class MyApp(ttk.Frame):
         #self.photolabel.pack(side=tkinter.TOP)
         
         self.pack()
+        self.fetch_parameters()
         
 
     def set_parameters(self, params):
@@ -154,12 +193,14 @@ class MyApp(ttk.Frame):
         self.exposure_mode.set_val(params['exposure_mode'])
         self.exposure_compensation.set(params['exposure_compensation'])
         self.res_cntrl.set_val(params['resolution'])
+        self.crop_cntrl.set_val(params['crop'])
 
     def get_parameters(self):
         params = {}
         params['exposure_mode'] = self.exposure_mode.get_val()
         params['exposure_compensation'] = self.exposure_compensation.get()
         params['resolution'] = self.res_cntrl.get_val()
+        params['crop'] = self.crop_cntrl.get_val()
         return params
 
     def send_parameters(self):
@@ -174,7 +215,7 @@ class MyApp(ttk.Frame):
         print('Image is %dx%d' % image.size)
         image.verify()
         print('Image is verified')
-        #self.photo = ImageTk.PhotoImage(image)
+#        self.photo = ImageTk.PhotoImage(image)
         #self.photolabel = tkinter.Label(self, image=photo)
         #self.photolabel.pack(side=tkinter.TOP)
  
