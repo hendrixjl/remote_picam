@@ -109,7 +109,7 @@ def load_settings(acamera):
             line = infile.read()
             p = extract_params(line)
     except IOError:
-        p = get_params()
+        p = get_params(acamera)
     return p
 
 def identify_camera(acamera):
