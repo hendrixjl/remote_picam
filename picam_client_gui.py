@@ -186,6 +186,16 @@ class MyApp(ttk.Frame):
         self.exposure_compensation.pack(side=tkinter.LEFT, padx=5, pady=5)
         exp_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
+        image_effect_options = ['none', 'negative', 'solarize', 'sketch', 'denoise', 'emboss', 'oilpaint',
+                                'hatch', 'gpen', 'pastel', 'watercolor', 'film', 'blur', 'saturation',
+                                'colorswap', 'washedout', 'posterise', 'colorpoint', 'colorbalance',
+                                'cartoon', 'deinterlace1', 'deinterlace2']
+        self.image_effect = MyOptionCntrl(self, "image_effect", image_effect_options[1], image_effect_options, self)
+        self.image_effect.pack(side=tkinter.TOP, fill=tkinter.X)
+
+        meter_mode_options = ['average', 'spot', 'backlit', 'matrix']
+        self.meter_mode = MyOptionCntrl(self, "meter_mode", meter_mode_options[1], meter_mode_options, self)
+        self.meter_mode.pack(side=tkinter.TOP, fill=tkinter.X)
 
         self.res_cntrl = MyResCntrl(self, 1600, 1200)
         self.res_cntrl.pack(side=tkinter.TOP)
@@ -210,11 +220,14 @@ class MyApp(ttk.Frame):
         self.awb_mode.set_val(params['awb_mode'])
         self.exposure_mode.set_val(params['exposure_mode'])
         self.exposure_compensation.set(params['exposure_compensation'])
+        self.meter_mode.set_val(params['meter_mode'])
         self.res_cntrl.set_val(params['resolution'])
         self.zoom_cntrl.set_val(params['zoom'])
 
     def get_parameters(self):
         params = {}
+        params['image_effect'] = self.image_effect.get_val()
+        params['meter_mode'] = self.meter_mode.get_val()
         params['awb_mode'] = self.awb_mode.get_val()
         params['exposure_mode'] = self.exposure_mode.get_val()
         params['exposure_compensation'] = self.exposure_compensation.get()
