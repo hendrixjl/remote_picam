@@ -104,10 +104,11 @@ class My4TupleCntrl(ttk.Frame):
         self.y2.insert(0, fmt.format(res[3]))
 
 class MyOptionCntrl(ttk.Frame):
-    def __init__(self, parent, name, first, options, *args, **kwargs):
+    def __init__(self, parent, name, first, options, handler, *args, **kwargs):
+        self.name = name
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         big_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
-        ttk.Label(big_frame, text=name).pack(side='left', padx=5, pady=5)
+        ttk.Label(big_frame, text=self.name).pack(side='left', padx=5, pady=5)
         self.var = tkinter.StringVar()
         max_chars = 0
         for o in options:
@@ -118,12 +119,19 @@ class MyOptionCntrl(ttk.Frame):
         self.opts.config(width=max_chars)
         self.opts.pack(side='left')
         big_frame.pack()
+##        self.observer = self.var.trace('w', self.callback()) #handler.callback(self.name, self.var.get()))
 
     def get_val(self):
         return self.var.get()
 
     def set_val(self, val):
+        print("MyOptionCntrl.set_val(). name={} val={}".format(self.name, val))
+##        self.var.trace_vdelete('w', self.observer)
         self.var.set(val)
+##        self.observer = self.var.trace('w', self.callback()) #handler.callback(self.name, self.var.get()))
+
+##    def callback(self):
+##        print("MyOptionCtrl.callback")
 
 class MyApp(ttk.Frame):
     """The adders gui and functions."""
@@ -144,6 +152,7 @@ class MyApp(ttk.Frame):
 
     def init_gui(self, host, port):
         """Builds GUI."""
+        self.service_callback = True
         self.root.title('remote_picam')
 
         top_frame = ttk.Frame(self)
@@ -162,19 +171,26 @@ class MyApp(ttk.Frame):
         addr_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         exp_frame = ttk.Frame(self)
+        choices_frame = ttk.Frame(exp_frame)
         exp_mode_options = ['off', 'auto', 'night', 'nightpreview', 'backlight',
                             'spotlight', 'sports', 'snow', 'beach', 'verylong',
                             'fixedfps', 'antishake', 'fireworks' ]
-        self.exposure_mode = MyOptionCntrl(exp_frame, "exposure_mode", exp_mode_options[1], exp_mode_options)
-        self.exposure_mode.pack(side=tkinter.LEFT, padx=5, pady=5)
+        self.exposure_mode = MyOptionCntrl(choices_frame, "exposure_mode", exp_mode_options[1], exp_mode_options, self)
+        self.exposure_mode.pack(side=tkinter.TOP, fill=tkinter.X)
+        awb_mode_options = ['off', 'auto', 'sunlight', 'cloudy', 'shade',
+                            'tungsten', 'florescent', 'incandescent', 'flash', 'horizon']
+        self.awb_mode = MyOptionCntrl(choices_frame, "awb_mode", awb_mode_options[1], awb_mode_options, self)
+        self.awb_mode.pack(side=tkinter.TOP, fill=tkinter.X)
+        choices_frame.pack(side=tkinter.LEFT)
         self.exposure_compensation = MyIntCntrl(exp_frame, "exp comp", 0, -25, 25)
         self.exposure_compensation.pack(side=tkinter.LEFT, padx=5, pady=5)
         exp_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
+
         self.res_cntrl = MyResCntrl(self, 1600, 1200)
         self.res_cntrl.pack(side=tkinter.TOP)
-        self.crop_cntrl = My4TupleCntrl(self, "crop", 0.0, 0.0, 1.0, 1.0)
-        self.crop_cntrl.pack(side=tkinter.TOP)
+        self.zoom_cntrl = My4TupleCntrl(self, "zoom", 0.0, 0.0, 1.0, 1.0)
+        self.zoom_cntrl.pack(side=tkinter.TOP)
 
         bottom_frame = ttk.Frame(self)
         ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
@@ -186,21 +202,24 @@ class MyApp(ttk.Frame):
         
         self.pack()
         self.fetch_parameters()
+        self.service_callback = True
         
 
     def set_parameters(self, params):
-        print("params={}".format(params))
+        print("set_parameters. params={}".format(params))
+        self.awb_mode.set_val(params['awb_mode'])
         self.exposure_mode.set_val(params['exposure_mode'])
         self.exposure_compensation.set(params['exposure_compensation'])
         self.res_cntrl.set_val(params['resolution'])
-        self.crop_cntrl.set_val(params['crop'])
+        self.zoom_cntrl.set_val(params['zoom'])
 
     def get_parameters(self):
         params = {}
+        params['awb_mode'] = self.awb_mode.get_val()
         params['exposure_mode'] = self.exposure_mode.get_val()
         params['exposure_compensation'] = self.exposure_compensation.get()
         params['resolution'] = self.res_cntrl.get_val()
-        params['crop'] = self.crop_cntrl.get_val()
+        params['zoom'] = self.zoom_cntrl.get_val()
         return params
 
     def send_parameters(self):
@@ -218,12 +237,19 @@ class MyApp(ttk.Frame):
 #        self.photo = ImageTk.PhotoImage(image)
         #self.photolabel = tkinter.Label(self, image=photo)
         #self.photolabel.pack(side=tkinter.TOP)
- 
 
     def fetch_parameters(self):
         params = picam_client.get_parameters(self.host.get(), int(self.port.get()))
         self.set_parameters(params)
+
+    def callback(self, name, data):
+        if self.service_callback:
+            prm = {}
+            prm[name] = data
+            print("callback. prm={}".format(prm))
         
+ #       new_params = picam_client.set_parameters(prm, self.host.get(), int(self.port.get()))
+ #       self.set_parameters(new_params)
         
 
 root = tkinter.Tk()
@@ -235,4 +261,4 @@ root.mainloop()
 # exposure_mode='auto' exposure_compensation=0
 # flash_mode='off' awb_mode='auto' awb_gains='(43,32),(549, 256)'
 # sensor_mode=0 image_denoise=True image_effect='none' meter_mode='average'
-# rotation=0' resolution='(720, 480)' crop='(0.0, 0.0, 1.0, 1.0)' zoom='(0.0, 0.0, 1.0, 1.0)'
+# rotation=0' resolution='(720, 480)' zoom='(0.0, 0.0, 1.0, 1.0)' zoom='(0.0, 0.0, 1.0, 1.0)'
