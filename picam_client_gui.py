@@ -125,7 +125,6 @@ class MyOptionCntrl(ttk.Frame):
         return self.var.get()
 
     def set_val(self, val):
-        print("MyOptionCntrl.set_val(). name={} val={}".format(self.name, val))
 ##        self.var.trace_vdelete('w', self.observer)
         self.var.set(val)
 ##        self.observer = self.var.trace('w', self.callback()) #handler.callback(self.name, self.var.get()))
@@ -184,6 +183,9 @@ class MyApp(ttk.Frame):
         choices_frame.pack(side=tkinter.LEFT)
         self.exposure_compensation = MyIntCntrl(exp_frame, "exp comp", 0, -25, 25)
         self.exposure_compensation.pack(side=tkinter.LEFT, padx=5, pady=5)
+        iso_options = ['0', '100', '200', '320', '400', '500', '640', '800']
+        self.iso = MyOptionCntrl(exp_frame, "iso", iso_options[0], iso_options, self)
+        self.iso.pack(side=tkinter.LEFT, padx=2, pady=2)
         exp_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         image_effect_options = ['none', 'negative', 'solarize', 'sketch', 'denoise', 'emboss', 'oilpaint',
@@ -217,12 +219,14 @@ class MyApp(ttk.Frame):
 
     def set_parameters(self, params):
         print("set_parameters. params={}".format(params))
+        self.image_effect.set_val(params['image_effect'])
         self.awb_mode.set_val(params['awb_mode'])
         self.exposure_mode.set_val(params['exposure_mode'])
         self.exposure_compensation.set(params['exposure_compensation'])
         self.meter_mode.set_val(params['meter_mode'])
         self.res_cntrl.set_val(params['resolution'])
         self.zoom_cntrl.set_val(params['zoom'])
+        self.iso.set_val("{}".format(params['iso']))
 
     def get_parameters(self):
         params = {}
@@ -233,6 +237,7 @@ class MyApp(ttk.Frame):
         params['exposure_compensation'] = self.exposure_compensation.get()
         params['resolution'] = self.res_cntrl.get_val()
         params['zoom'] = self.zoom_cntrl.get_val()
+        params['iso'] = int(self.iso.get_val())
         return params
 
     def send_parameters(self):
