@@ -30,7 +30,7 @@ def request_picture(params, host, port):
     mysocket.send("{}\n".format(params).encode())
     pic = get_picture(mysocket)
     t = datetime.datetime.now()
-    fname = "pi-{}-{}-{}-{}-{}-{}.jpg".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
+    fname = "pictures/pi-{}-{}-{}-{}-{}-{}.jpg".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
     with open(fname, 'wb') as out:
         out.write(pic.read())
     mysocket.close()
