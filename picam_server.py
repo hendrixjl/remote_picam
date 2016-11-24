@@ -155,6 +155,7 @@ def main():
                 connection.sendall(buffer)
                 print("sent picture")
                 connection.close()
+                save_settings(params)
     finally:
         server_socket.close()
 
