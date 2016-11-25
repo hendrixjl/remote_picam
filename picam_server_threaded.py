@@ -47,6 +47,7 @@ class myThread (threading.Thread):
         if '@' in cmd:
             self.my_lock.acquire()
             params = picamera_controller.get_params(camera)
+            print("got parameters. p={}".format(params))
             self.my_lock.release()
             return "{}".format(params)
         elif '!' in cmd:
@@ -95,9 +96,12 @@ def main():
             print(buff)
             if '^' in buff:
                 athread.stop()
+                connection.sendall("ok^")
+                connection.close()
                 break
             else:
                 response = athread.process_command(buff)
+                print("about to send")
                 connection.sendall(response)
                 connection.close()
 
