@@ -90,7 +90,7 @@ def main():
     server_socket.bind(('0.0.0.0', 8000))
     server_socket.listen(0)
     athread = myThread(5)
-    athread.start()
+#    athread.start()
     print("Running")
     try:
         while True:
@@ -100,16 +100,17 @@ def main():
                 print(buff)
                 if '^' in buff:
                     athread.stop()
-                    connection.sendall("ok^")
+                    connection.sendall("ok^\n")
                     connection.close()
                     break
                 else:
                     response = athread.process_command(buff)
                     print("about to send")
-                    connection.sendall(response)
+                    connection.sendall("{}\n".format(response))
                     connection.close()
             except:
-                print "Unexpected error:", sys.exc_info()[0]
+                print("Unexpected error: {}".format(sys.exc_info()[0]))
+                connection.sendall("oops\n")
                 raise
  
     finally:
