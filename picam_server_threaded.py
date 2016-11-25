@@ -108,7 +108,7 @@ def main():
                     print("about to send")
                     connection.sendall(response)
                     connection.close()
-            except
+            except:
                 print "Unexpected error:", sys.exc_info()[0]
                 raise
  
