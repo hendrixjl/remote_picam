@@ -88,7 +88,7 @@ def main():
     server_socket.bind(('0.0.0.0', 8000))
     server_socket.listen(0)
     athread = myThread(5)
-#    athread.start()
+    athread.start()
     print("Running")
     try:
         while True:
@@ -114,8 +114,8 @@ def main():
     finally:
         print("finalizing")
         server_socket.close()
-##        athread.stop()
-##        athread.join()
+        athread.stop()
+        athread.join()
 
 if __name__ == "__main__":
     main()
