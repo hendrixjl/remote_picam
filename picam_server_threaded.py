@@ -3,9 +3,10 @@ import picamera_controller
 import datetime
 import socket
 import io
-import struct
+#import struct
 import ast
 import threading
+import time
 
 class myThread (threading.Thread):
     def __init__(self, delay):
