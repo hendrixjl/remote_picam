@@ -48,7 +48,7 @@ class myThread (threading.Thread):
             self.my_lock.acquire()
             params = picamera_controller.get_params(camera)
             self.my_lock.release()
-            return params
+            return "{}".format(params)
         elif '!' in cmd:
             params = picamera_controller.extract_params(cmd[1:])
             self.my_lock.acquire()
@@ -61,14 +61,17 @@ class myThread (threading.Thread):
             self.my_lock.acquire()
             self.delay = delay
             self.my_lock.release()
+            return "ok#"
         elif '$' in cmd:
             self.my_lock.acquire()
             self.take_pictures = True
             self.my_lock.release()
+            return "ok$"
         elif '%' in cmd:
             self.my_lock.acquire()
             self.take_pictures = False
             self.my_lock.release()
+            return "ok%"
 
 def get_line(conn):
     buff = ''
@@ -94,7 +97,10 @@ def main():
                 athread.stop()
                 break
             else:
-                athread.process_command(buff)
+                response = athread.process_command(buff)
+                connection.sendall(response)
+                connection.close()
+
     finally:
         server_socket.close()
         athread.join()
