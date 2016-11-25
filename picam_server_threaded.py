@@ -49,15 +49,15 @@ class myThread (threading.Thread):
             print("in @")
 ##            self.my_lock.acquire()
             print("got lock")
-            params = picamera_controller.get_params(camera)
+            params = picamera_controller.get_params(self.camera)
             print("got parameters. p={}".format(params))
 ##            self.my_lock.release()
             return "{}".format(params)
         elif '!' in cmd:
             params = picamera_controller.extract_params(cmd[1:])
             self.my_lock.acquire()
-            picamera_controller.set_params(params, camera)
-            params = picamera_controller.get_params(camera)
+            picamera_controller.set_params(params, self.camera)
+            params = picamera_controller.get_params(self.camera)
             self.my_lock.release()
             return "{}".format(params)
         elif '#' in cmd:
