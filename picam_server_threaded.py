@@ -113,7 +113,9 @@ def main():
                 raise
  
     finally:
+        print("finalizing")
         server_socket.close()
+        athread.stop()
         athread.join()
 
 if __name__ == "__main__":
