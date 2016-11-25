@@ -1,5 +1,5 @@
-#import picamera
-#import picamera_controller
+import picamera
+import picamera_controller
 import datetime
 import socket
 import io
