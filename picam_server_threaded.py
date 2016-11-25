@@ -3,7 +3,7 @@ import picamera_controller
 import datetime
 import socket
 import io
-#import struct
+import sys
 import ast
 import threading
 import time
