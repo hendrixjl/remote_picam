@@ -39,19 +39,19 @@ class myThread (threading.Thread):
             time.sleep(self.delay)
 
     def stop(self):
-        self.my_lock.acquire()
+##        self.my_lock.acquire()
         self.keep_going = False
-        self.my_lock.release()
+##        self.my_lock.release()
 
     def process_command(self, cmd):
         print("In process command. cmd={}".format(cmd))
         if '@' in cmd:
             print("in @")
-            self.my_lock.acquire()
+##            self.my_lock.acquire()
             print("got lock")
             params = picamera_controller.get_params(camera)
             print("got parameters. p={}".format(params))
-            self.my_lock.release()
+##            self.my_lock.release()
             return "{}".format(params)
         elif '!' in cmd:
             params = picamera_controller.extract_params(cmd[1:])
@@ -116,8 +116,8 @@ def main():
     finally:
         print("finalizing")
         server_socket.close()
-        athread.stop()
-        athread.join()
+##        athread.stop()
+##        athread.join()
 
 if __name__ == "__main__":
     main()
