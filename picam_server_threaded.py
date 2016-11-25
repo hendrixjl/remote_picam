@@ -94,20 +94,24 @@ def main():
     print("Running")
     try:
         while True:
-            connection = server_socket.accept()[0]
-            buff = get_line(connection)
-            print(buff)
-            if '^' in buff:
-                athread.stop()
-                connection.sendall("ok^")
-                connection.close()
-                break
-            else:
-                response = athread.process_command(buff)
-                print("about to send")
-                connection.sendall(response)
-                connection.close()
-
+            try:
+                connection = server_socket.accept()[0]
+                buff = get_line(connection)
+                print(buff)
+                if '^' in buff:
+                    athread.stop()
+                    connection.sendall("ok^")
+                    connection.close()
+                    break
+                else:
+                    response = athread.process_command(buff)
+                    print("about to send")
+                    connection.sendall(response)
+                    connection.close()
+            except
+                print "Unexpected error:", sys.exc_info()[0]
+                raise
+ 
     finally:
         server_socket.close()
         athread.join()
