@@ -2,7 +2,7 @@ import picamera
 import datetime
 import socket
 import io
-import struct
+#import struct
 import ast
 
 
