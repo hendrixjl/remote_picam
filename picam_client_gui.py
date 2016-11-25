@@ -207,6 +207,7 @@ class MyApp(ttk.Frame):
         bottom_frame = ttk.Frame(self)
         ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
         ttk.Button(bottom_frame, text='Set Parameters', command=self.send_parameters).pack(pady=5)
+        ttk.Button(bottom_frame, text='Terminate Server', command=self.terminate_server).pack(pady=5)
         bottom_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         #self.photolabel = tkinter.Label(self)
@@ -216,7 +217,9 @@ class MyApp(ttk.Frame):
         self.fetch_parameters()
         self.service_callback = True
         
-
+    def terminate_server(self):
+        picam_client.server_terminate(self.host.get(), int(self.port.get()))
+        
     def set_parameters(self, params):
         print("set_parameters. params={}".format(params))
         self.image_effect.set_val(params['image_effect'])

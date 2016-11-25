@@ -56,3 +56,11 @@ def get_parameters(host, port):
     mysocket.close()
     return params
     
+def server_terminate(host, port):
+    message = "^\n"
+    mysocket = socket.socket()
+    mysocket.connect((host, port))
+    mysocket.send(message.encode())
+    print("{}".format(get_line(mysocket)))
+    mysocket.close()
+    
