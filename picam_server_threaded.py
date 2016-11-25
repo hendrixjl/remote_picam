@@ -44,6 +44,7 @@ class myThread (threading.Thread):
         self.my_lock.release()
 
     def process_command(self, cmd):
+        print("In process command. cmd={}".format(cmd))
         if '@' in cmd:
             self.my_lock.acquire()
             params = picamera_controller.get_params(camera)

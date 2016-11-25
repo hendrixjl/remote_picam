@@ -69,6 +69,7 @@ def set_params(aparams, acamera):
     save_settings(aparams)
 
 def get_params(acamera):
+    print("in picamera_controller.get_params()")
     p = {}
 #    p['awb_gains'] = acamera.awb_gains
     p['brightness'] = acamera.brightness
