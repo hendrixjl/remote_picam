@@ -18,7 +18,6 @@ class myThread (threading.Thread):
         self.keep_going = True
         self.take_pictures = False
         self.my_lock = threading.Lock()
-        self.my_lock.release()
 
     def _take_picture(self):
         buffer = take_shot(self.camera)
@@ -47,7 +46,9 @@ class myThread (threading.Thread):
     def process_command(self, cmd):
         print("In process command. cmd={}".format(cmd))
         if '@' in cmd:
+            print("in @")
             self.my_lock.acquire()
+            print("got lock")
             params = picamera_controller.get_params(camera)
             print("got parameters. p={}".format(params))
             self.my_lock.release()
