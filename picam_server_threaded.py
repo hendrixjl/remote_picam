@@ -18,6 +18,7 @@ class myThread (threading.Thread):
         self.keep_going = True
         self.take_pictures = False
         self.my_lock = threading.Lock()
+        self.my_lock.release()
 
     def _take_picture(self):
         buffer = take_shot(self.camera)
