@@ -151,23 +151,22 @@ class MyApp(ttk.Frame):
 
     def init_gui(self, host, port):
         """Builds GUI."""
-        self.service_callback = True
         self.root.title('remote_picam')
 
-        top_frame = ttk.Frame(self)
-        ttk.Button(top_frame, text='Get Picture', command=self.get_picture).pack(pady=5)
-        top_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
+        top_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
+        ttk.Button(top_frame, text='Start Pictures', command=self.get_picture).pack(side=tkinter.LEFT, pady=5)
+        self.delay = MyIntCntrl(top_frame, "delay", 30, 1, 3600)
+        self.delay.pack(side=tkinter.LEFT, padx=2, pady=5)
         
-        addr_frame = ttk.Frame(self)
-        ttk.Label(addr_frame, text='host:').pack(side=tkinter.LEFT, padx=5, pady=5)
-        self.host = ttk.Entry(addr_frame, width=12)
+        ttk.Label(top_frame, text='host:').pack(side=tkinter.LEFT, padx=5, pady=5)
+        self.host = ttk.Entry(top_frame, width=12)
         self.host.insert(0, host)
         self.host.pack(side=tkinter.LEFT, padx=5, pady=5)
-        ttk.Label(addr_frame, text='port:').pack(side=tkinter.LEFT, padx=5, pady=5)
-        self.port = ttk.Entry(addr_frame, width=5, validatecommand=(self.register(self.validate_port), '%P'))
+        ttk.Label(top_frame, text='port:').pack(side=tkinter.LEFT, padx=5, pady=5)
+        self.port = ttk.Entry(top_frame, width=5, validatecommand=(self.register(self.validate_port), '%P'))
         self.port.insert(0, port)
         self.port.pack(side=tkinter.LEFT, padx=5, pady=5)
-        addr_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
+        top_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         exp_frame = ttk.Frame(self)
         choices_frame = ttk.Frame(exp_frame)
@@ -215,7 +214,6 @@ class MyApp(ttk.Frame):
         
         self.pack()
         self.fetch_parameters()
-        self.service_callback = True
         
     def terminate_server(self):
         picam_client.server_terminate(self.host.get(), int(self.port.get()))
@@ -230,6 +228,7 @@ class MyApp(ttk.Frame):
         self.res_cntrl.set_val(params['resolution'])
         self.zoom_cntrl.set_val(params['zoom'])
         self.iso.set_val("{}".format(params['iso']))
+        self.delay.set_val("{}".format(params['delay']))
 
     def get_parameters(self):
         params = {}
@@ -241,6 +240,7 @@ class MyApp(ttk.Frame):
         params['resolution'] = self.res_cntrl.get_val()
         params['zoom'] = self.zoom_cntrl.get_val()
         params['iso'] = int(self.iso.get_val())
+        params['delay'] = int(self.delay.get_val())
         return params
 
     def send_parameters(self):
@@ -264,10 +264,9 @@ class MyApp(ttk.Frame):
         self.set_parameters(params)
 
     def callback(self, name, data):
-        if self.service_callback:
-            prm = {}
-            prm[name] = data
-            print("callback. prm={}".format(prm))
+        prm = {}
+        prm[name] = data
+        print("callback. prm={}".format(prm))
         
  #       new_params = picam_client.set_parameters(prm, self.host.get(), int(self.port.get()))
  #       self.set_parameters(new_params)
