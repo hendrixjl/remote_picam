@@ -8,6 +8,16 @@ import ast
 import threading
 import time
 
+class Scope():
+    def __init__(self, onentry, onexit):
+        self.onentry = onentry
+        self.onexit = onexit
+    def __enter__(self):
+        self.onentry()
+        return self.onentry
+    def __exit__(self, type, value, traceback):
+        self.onexit()
+
 class myThread (threading.Thread):
     def __init__(self, delay):
         threading.Thread.__init__(self)
@@ -29,50 +39,41 @@ class myThread (threading.Thread):
         
     def run(self):
         while True:
-            self.my_lock.acquire()
-            if not self.keep_going:
-                self.my_lock.release()
-                break
-            self.my_lock.release()
+            with Scope(self.my_lock.acquire, self.my_lock.release):
+                if not self.keep_going:
+                    break
             if self.take_pictures:
                 self._take_picture()
             time.sleep(self.delay)
 
     def stop(self):
-        self.my_lock.acquire()
-        self.keep_going = False
-        self.my_lock.release()
+        with Scope(self.my_lock.acquire, self.my_lock.release):
+            self.keep_going = False
 
     def process_command(self, cmd):
-        print("In process command. cmd={}".format(cmd))
         if '@' in cmd:
-            self.my_lock.acquire()
-            params = picamera_controller.get_params(self.camera)
-            print("got parameters. p={}".format(params))
-            self.my_lock.release()
+            with Scope(self.my_lock.acquire, self.my_lock.release):
+                params = picamera_controller.get_params(self.camera)
             return "{}".format(params)
         elif '!' in cmd:
             params = picamera_controller.extract_params(cmd[1:])
-            self.my_lock.acquire()
-            picamera_controller.set_params(params, self.camera)
-            params = picamera_controller.get_params(self.camera)
-            self.my_lock.release()
+            with Scope(self.my_lock.acquire, self.my_lock.release):
+                picamera_controller.set_params(params, self.camera)
+                params = picamera_controller.get_params(self.camera)
             return "{}".format(params)
         elif '#' in cmd:
             delay = int(cmd[1:])
-            self.my_lock.acquire()
-            self.delay = delay
-            self.my_lock.release()
+            with Scope(self.my_lock.acquire, self.my_lock.release):
+                self.delay = delay
+                self.my_lock.release()
             return "ok#"
         elif '$' in cmd:
-            self.my_lock.acquire()
-            self.take_pictures = True
-            self.my_lock.release()
+            with Scope(self.my_lock.acquire, self.my_lock.release):
+                self.take_pictures = True
             return "ok$"
         elif '%' in cmd:
-            self.my_lock.acquire()
-            self.take_pictures = False
-            self.my_lock.release()
+            with Scope(self.my_lock.acquire, self.my_lock.release):
+                self.take_pictures = False
             return "ok%"
 
 def get_line(conn):
@@ -103,7 +104,6 @@ def main():
                     break
                 else:
                     response = athread.process_command(buff)
-                    print("about to send")
                     connection.sendall("{}\n".format(response))
                     connection.close()
             except:
