@@ -33,7 +33,7 @@ class myThread (threading.Thread):
         self.my_lock = threading.Lock()
 
     def _take_picture(self):
-        buffer = take_shot(self.camera)
+        buffer = picamera_controller.take_shot(self.camera)
         t = datetime.datetime.now()
         fname = "pictures/pi-{}-{}-{}-{}-{}-{}.jpg".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
         with open(fname, 'wb') as out:
