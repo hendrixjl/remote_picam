@@ -19,12 +19,15 @@ class Scope():
         self.onexit()
 
 class myThread (threading.Thread):
-    def __init__(self, delay):
+    def __init__(self):
         threading.Thread.__init__(self)
         self.camera = picamera.PiCamera()
         params = picamera_controller.load_settings(self.camera)
         picamera_controller.set_params(params, self.camera)
-        self.delay = delay
+        if 'delay' in params:
+            self.delay = params['delay']
+        else:
+            self.delay = 60
         self.keep_going = True
         self.take_pictures = False
         self.my_lock = threading.Lock()
@@ -86,7 +89,7 @@ def main():
     server_socket = socket.socket()
     server_socket.bind(('0.0.0.0', 8000))
     server_socket.listen(0)
-    athread = myThread(5)
+    athread = myThread()
     athread.start()
     print("Running")
     try:
