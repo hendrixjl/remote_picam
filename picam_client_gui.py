@@ -37,10 +37,10 @@ class MyIntCntrl(ttk.Frame):
             val -= 1
             self.val["text"] = "{}".format(val)
 
-    def get(self):
+    def get_val(self):
         return int(self.val["text"])
 
-    def set(self, val):
+    def set_val(self, val):
         self.val["text"] = val
 
 
@@ -223,7 +223,7 @@ class MyApp(ttk.Frame):
         self.image_effect.set_val(params['image_effect'])
         self.awb_mode.set_val(params['awb_mode'])
         self.exposure_mode.set_val(params['exposure_mode'])
-        self.exposure_compensation.set(params['exposure_compensation'])
+        self.exposure_compensation.set_val(params['exposure_compensation'])
         self.meter_mode.set_val(params['meter_mode'])
         self.res_cntrl.set_val(params['resolution'])
         self.zoom_cntrl.set_val(params['zoom'])
@@ -236,7 +236,7 @@ class MyApp(ttk.Frame):
         params['meter_mode'] = self.meter_mode.get_val()
         params['awb_mode'] = self.awb_mode.get_val()
         params['exposure_mode'] = self.exposure_mode.get_val()
-        params['exposure_compensation'] = self.exposure_compensation.get()
+        params['exposure_compensation'] = self.exposure_compensation.get_val()
         params['resolution'] = self.res_cntrl.get_val()
         params['zoom'] = self.zoom_cntrl.get_val()
         params['iso'] = int(self.iso.get_val())
