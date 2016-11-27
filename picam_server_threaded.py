@@ -54,19 +54,17 @@ class myThread (threading.Thread):
         if '@' in cmd:
             with Scope(self.my_lock.acquire, self.my_lock.release):
                 params = picamera_controller.get_params(self.camera)
+                params['delay'] = self.delay
             return "{}".format(params)
         elif '!' in cmd:
             params = picamera_controller.extract_params(cmd[1:])
             with Scope(self.my_lock.acquire, self.my_lock.release):
                 picamera_controller.set_params(params, self.camera)
+                if 'delay' in params:
+                    self.delay = params['delay']
                 params = picamera_controller.get_params(self.camera)
+                params['delay'] = self.delay
             return "{}".format(params)
-        elif '#' in cmd:
-            delay = int(cmd[1:])
-            with Scope(self.my_lock.acquire, self.my_lock.release):
-                self.delay = delay
-                self.my_lock.release()
-            return "ok#"
         elif '$' in cmd:
             with Scope(self.my_lock.acquire, self.my_lock.release):
                 self.take_pictures = True
