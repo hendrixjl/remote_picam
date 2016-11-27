@@ -154,7 +154,8 @@ class MyApp(ttk.Frame):
         self.root.title('remote_picam')
 
         top_frame = ttk.Frame(self, relief=tkinter.GROOVE, borderwidth=2)
-        ttk.Button(top_frame, text='Start Pictures', command=self.get_picture).pack(side=tkinter.LEFT, pady=5)
+        self.picture_button = ttk.Button(top_frame, text='Start Pictures', command=self.picture_button_press)
+        self.picture_button.pack(side=tkinter.LEFT, pady=5)
         self.delay = MyIntCntrl(top_frame, "delay", 30, 1, 3600)
         self.delay.pack(side=tkinter.LEFT, padx=2, pady=5)
         
@@ -248,17 +249,15 @@ class MyApp(ttk.Frame):
         new_params = picam_client.set_parameters(params, self.host.get(), int(self.port.get()))
         print("{}".format(new_params))
 
-    def get_picture(self):
-        params = self.get_parameters()
-        image_stream = picam_client.request_picture(params, self.host.get(), int(self.port.get()))
-        image = Image.open(image_stream)
-        print('Image is %dx%d' % image.size)
-        image.verify()
-        print('Image is verified')
-#        self.photo = ImageTk.PhotoImage(image)
-        #self.photolabel = tkinter.Label(self, image=photo)
-        #self.photolabel.pack(side=tkinter.TOP)
-
+    def picture_button_press(self):
+        if 'Start Pictures' in self.picture_button['text']:
+            self.picture_button['text'] = 'Stop Pictures'
+            self.send_parameters()
+            picam_client.start_pictures(self.host.get(), int(self.port.get()))
+        else:
+            picam_client.stop_pictures(self.host.get(), int(self.port.get()))
+            self.picture_button['text'] = 'Start Pictures'
+            
     def fetch_parameters(self):
         params = picam_client.get_parameters(self.host.get(), int(self.port.get()))
         self.set_parameters(params)

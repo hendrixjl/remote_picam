@@ -38,6 +38,20 @@ def request_picture(params, host, port):
     pic.seek(0)
     return pic
 
+def start_pcitures(host, port):
+    mysocket = socket.socket()
+    mysocket.connect((host, port))
+    mysocket.send("$\n".encode())
+    get_line(mysocket)
+    mysocket.close()
+    
+def stop_pcitures(host, port):
+    mysocket = socket.socket()
+    mysocket.connect((host, port))
+    mysocket.send("%\n".encode())
+    get_line(mysocket)
+    mysocket.close()
+    
 def set_parameters(params, host, port):
     print("params={}".format(params))
     mysocket = socket.socket()
