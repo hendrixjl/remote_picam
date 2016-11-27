@@ -102,6 +102,7 @@ def main():
                     break
                 else:
                     response = athread.process_command(buff)
+                    print("response={}".format(response))
                     connection.sendall("{}\n".format(response))
                     connection.close()
             except:
