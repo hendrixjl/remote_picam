@@ -205,9 +205,9 @@ class MyApp(ttk.Frame):
         self.zoom_cntrl.pack(side=tkinter.TOP)
 
         bottom_frame = ttk.Frame(self)
-        ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(pady=5)
-        ttk.Button(bottom_frame, text='Set Parameters', command=self.send_parameters).pack(pady=5)
-        ttk.Button(bottom_frame, text='Terminate Server', command=self.terminate_server).pack(pady=5)
+        ttk.Button(bottom_frame, text='Get Parameters', command=self.fetch_parameters).pack(side=tkinter.LEFT, padx=5)
+        ttk.Button(bottom_frame, text='Set Parameters', command=self.send_parameters).pack(side=tkinter.LEFT, padx=5)
+        ttk.Button(bottom_frame, text='Terminate Server', command=self.terminate_server).pack(side=tkinter.LEFT, padx=5)
         bottom_frame.pack(side=tkinter.TOP, fill=tkinter.BOTH)
 
         #self.photolabel = tkinter.Label(self)
