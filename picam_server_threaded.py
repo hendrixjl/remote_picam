@@ -7,6 +7,7 @@ import sys
 import ast
 import threading
 import time
+from PIL import Image
 
 class Scope():
     def __init__(self, onentry, onexit):
@@ -35,10 +36,15 @@ class myThread (threading.Thread):
     def _take_picture(self):
         buffer = picamera_controller.take_shot(self.camera)
         t = datetime.datetime.now()
-        fname = "pictures/pi-{}-{}-{}-{}-{}-{}.jpg".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
-        with open(fname, 'wb') as out:
+        fname = "pictures/pi-{}-{}-{}-{}-{}-{}".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
+        with open(fname + ".jpg", 'wb') as out:
             out.write(buffer)
-        print("wrote {}".format(fname))
+        im = Image.open(fname + ".jpg")
+        thumb_width = 320
+        size = thumb_width, thumb_width * im.size[1] / im.size[0]
+        im.thumbnail(size)
+        im.save(fname + ".thumbnail.jpg")
+        print("wrote {}".format(fname + ".jpg"))
         
     def run(self):
         while True:
