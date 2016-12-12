@@ -33,10 +33,19 @@ class myThread (threading.Thread):
         self.take_pictures = False
         self.my_lock = threading.Lock()
 
+    def _movement(self):
+        res = params['resolution']
+        width = 320
+        size = width * res[1] / res[0]
+        buffer = picamera_controller.take_rgb(self.camera, size)
+        ans = movement_rgb(buffer, self.last_image, self.sensitivity)
+        self.last_image = buffer
+        return ans
+
     def _take_picture(self):
         buffer = picamera_controller.take_shot(self.camera)
         t = datetime.datetime.now()
-        fname = "pictures/pi-{}-{}-{}-{}-{}-{}".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
+        fname = "pictures/pi-{:4d}-{:02d}-{:02d}-{:02d}-{:02d}-{:02d}".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
         with open(fname + ".jpg", 'wb') as out:
             out.write(buffer)
         im = Image.open(fname + ".jpg")
