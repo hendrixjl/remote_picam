@@ -22,8 +22,11 @@ class Scope():
 class myThread (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+        self.thumb_percentage = 10
         self.camera = picamera.PiCamera()
         params = picamera_controller.load_settings(self.camera)
+        if 'thumb' in params:
+            self.thumb_percentage = int(params['thumb'])
         picamera_controller.set_params(params, self.camera)
         if 'delay' in params:
             self.delay = params['delay']
@@ -49,7 +52,7 @@ class myThread (threading.Thread):
         with open(fname + ".jpg", 'wb') as out:
             out.write(buffer)
         im = Image.open(fname + ".jpg")
-        thumb_width = 320
+        thumb_width = int(im.size[0] * self.thumb_percentage / 100)
         size = thumb_width, thumb_width * im.size[1] / im.size[0]
         im.thumbnail(size)
         im.save(fname + ".thumbnail.jpg")
@@ -73,6 +76,7 @@ class myThread (threading.Thread):
             with Scope(self.my_lock.acquire, self.my_lock.release):
                 params = picamera_controller.get_params(self.camera)
                 params['delay'] = self.delay
+                params['thumb'] = str(self.thumb_percentage)
             return "{}".format(params)
         elif '!' in cmd:
             params = picamera_controller.extract_params(cmd[1:])
@@ -80,6 +84,8 @@ class myThread (threading.Thread):
                 picamera_controller.set_params(params, self.camera)
                 if 'delay' in params:
                     self.delay = params['delay']
+                if 'thumb' in params:
+                    self.thumb_percentage = int(params['thumb'])
                 params = picamera_controller.get_params(self.camera)
                 params['delay'] = self.delay
             return "{}".format(params)

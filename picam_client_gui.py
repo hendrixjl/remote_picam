@@ -56,6 +56,10 @@ class MyResCntrl(ttk.Frame):
         self.y = ttk.Entry(big_frame, width=4)
         self.y.insert(0, str(y))
         self.y.pack(side=tkinter.LEFT, padx=5, pady=5)
+        ttk.Label(big_frame, text="thumb %:").pack(side=tkinter.LEFT)
+        self.thumb = ttk.Entry(big_frame, width=3)
+        self.thumb.insert(0, "10")
+        self.thumb.pack(side=tkinter.LEFT, padx=5, pady=5)
         big_frame.pack()
         
     def get_val(self):
@@ -67,6 +71,13 @@ class MyResCntrl(ttk.Frame):
         self.y.delete(0, tkinter.END)
         self.y.insert(0, str(res[1]))
 
+    def get_thumb_pct(self):
+        return int(self.thumb.get())
+
+    def set_thumb_pct(self, pct):
+        self.thumb.delete(0, tkinter.END)
+        self.thumb.insert(0, str(pct))
+        
 class My4TupleCntrl(ttk.Frame):
     def __init__(self, parent, name, x1, y1, x2, y2, *args, **kwargs):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
@@ -227,6 +238,8 @@ class MyApp(ttk.Frame):
         self.exposure_compensation.set_val(params['exposure_compensation'])
         self.meter_mode.set_val(params['meter_mode'])
         self.res_cntrl.set_val(params['resolution'])
+        if 'thumb' in params:
+            self.res_cntrl.set_thumb_pct(params['thumb'])
         self.zoom_cntrl.set_val(params['zoom'])
         self.iso.set_val("{}".format(params['iso']))
         self.delay.set_val("{}".format(params['delay']))
@@ -239,6 +252,7 @@ class MyApp(ttk.Frame):
         params['exposure_mode'] = self.exposure_mode.get_val()
         params['exposure_compensation'] = self.exposure_compensation.get_val()
         params['resolution'] = self.res_cntrl.get_val()
+        params['thumb'] = self.res_cntrl.get_thumb_pct()
         params['zoom'] = self.zoom_cntrl.get_val()
         params['iso'] = int(self.iso.get_val())
         params['delay'] = int(self.delay.get_val())
