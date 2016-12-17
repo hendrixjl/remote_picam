@@ -272,7 +272,16 @@ class MyApp(ttk.Frame):
         
 
 root = tkinter.Tk()
-MyApp(root, sys.argv[1], sys.argv[2])
+if len(sys.argv)<2:
+    print("usage: {} ip <port>".format(sys.argv[0]))
+    exit(1)
+ip = sys.argv[1]
+if len(sys.argv) > 2:
+    port = sys.argv[2]
+else:
+    print("Using port=8000")
+    port = "8000"
+MyApp(root, ip, port)
 root.mainloop()
 
 
